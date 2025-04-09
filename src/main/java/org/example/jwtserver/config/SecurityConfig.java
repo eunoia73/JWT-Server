@@ -2,6 +2,8 @@ package org.example.jwtserver.config;
 
 
 import lombok.RequiredArgsConstructor;
+import org.example.jwtserver.filter.MyFilter1;
+import org.example.jwtserver.filter.MyFilter3;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
@@ -20,6 +23,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
     httpSecurity
+            .addFilterBefore(new MyFilter3(), BasicAuthenticationFilter.class)
             .addFilter(corsFilter)  //인증 있으면 시큐리티 필터에 등록
             .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
             .formLogin(AbstractHttpConfigurer::disable)
