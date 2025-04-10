@@ -1,5 +1,6 @@
 package org.example.jwtserver.auth;
 
+import lombok.RequiredArgsConstructor;
 import org.example.jwtserver.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,13 +8,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@RequiredArgsConstructor
 public class PrincipalDetails implements UserDetails {
 
-    private User user;
-
-    public PrincipalDetails(User user) {
-        this.user = user;
-    }
+    private final User user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
