@@ -2,14 +2,17 @@ package org.example.jwtserver.config;
 
 
 import lombok.RequiredArgsConstructor;
-import org.example.jwtserver.filter.MyFilter1;
 import org.example.jwtserver.filter.MyFilter3;
+import org.example.jwtserver.jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
@@ -21,10 +24,11 @@ public class SecurityConfig {
 
     private final CorsFilter corsFilter;
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AuthenticationManager authenticationManager) throws Exception {
     httpSecurity
             .addFilterBefore(new MyFilter3(), BasicAuthenticationFilter.class)
             .addFilter(corsFilter)  //인증 있으면 시큐리티 필터에 등록
+            .addFilter(new JwtAuthenticationFilter(authenticationManager))
             .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
@@ -39,4 +43,15 @@ public class SecurityConfig {
             );
         return httpSecurity.build();
     }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
 }
